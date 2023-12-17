@@ -20,16 +20,65 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(boolValue = true) {
+    this.boolValue = boolValue;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  encrypt(text, key) {
+    if (!text || !key) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    text = text.toUpperCase();
+    key = key.toUpperCase();
+
+    let encryptedMessage = '';
+    let index = 0;
+    
+    for (let i = 0; i < text.length; i++) {
+      if (text[i].match(/[A-Z]/)) {
+        const messageCode = text.charCodeAt(i) - 65;
+        const keyCharCode = key.charCodeAt(index) - 65;
+        const encryptedCode = (messageCode + keyCharCode) % 26;
+        const encryptedChar = String.fromCharCode(encryptedCode + 65);
+        encryptedMessage += encryptedChar;
+        index++;
+        if (index === key.length) {
+          index = 0;
+        }
+      } else {
+        encryptedMessage += text[i];
+      }
+    }
+    return this.boolValue ? encryptedMessage : encryptedMessage.split('').reverse().join('');
+  }
+
+  decrypt(text, key) {
+    if (!text || !key) {
+      throw new Error('Incorrect arguments!');
+    }
+    text = text.toUpperCase();
+    key = key.toUpperCase();
+    let decryptedMessage = '';
+    let index = 0;
+    for (let i = 0; i < text.length; i++) {
+      if (text[i].match(/[A-Z]/)) {
+        const encryptedCharCode = text.charCodeAt(i) - 65;
+        const keyCharCode = key.charCodeAt(index) - 65;
+        const decryptedCharCode = (encryptedCharCode - keyCharCode + 26) % 26;
+        const decryptedChar = String.fromCharCode(decryptedCharCode + 65);
+        decryptedMessage += decryptedChar;
+        index++;
+        if (index === key.length) {
+          index = 0;
+        }
+      } else {
+        decryptedMessage += text[i];
+      }
+    }
+    return this.boolValue ? decryptedMessage : decryptedMessage.split('').reverse().join('');
   }
 }
-
 module.exports = {
   VigenereCipheringMachine
 };
